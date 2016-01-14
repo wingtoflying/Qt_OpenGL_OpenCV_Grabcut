@@ -58,8 +58,8 @@ Qt_Image_Marker::Qt_Image_Marker(QWidget *parent)
 
 	connect(ui.actionClose, SIGNAL(triggered()), this, SLOT(closeImages()));
 	connect(ui.imageViewerWidget, SIGNAL(mouseCoorOnImgSignal(QPoint)), this, SLOT(show_coordinate(QPoint)));
-	markFroegroundColor = qRgba(0, 0, 255, 255);
-	markBackgroundColor = qRgba(255, 0, 0, 255);
+	markFroegroundColor = qRgba(0, 0, 255, 128);
+	markBackgroundColor = qRgba(255, 0, 0, 128);
 	ui.radioButton_markForeground->setChecked(true);
 
 	ui.lineEdit_strokeWidth->setValidator(new QIntValidator(strokeWidthMin, strokeWidthMax, this));
@@ -157,7 +157,7 @@ void Qt_Image_Marker::link_select_foreground_pen(bool checked)
 {
 	if (checked)
 	{
-		ui.imageViewerWidget->setDrawColor(this->markFroegroundColor);
+		ui.imageViewerWidget->setDrawColor(QColor::fromRgba(this->markFroegroundColor));
 	}
 }
 
