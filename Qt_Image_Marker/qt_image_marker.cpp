@@ -95,6 +95,8 @@ Qt_Image_Marker::Qt_Image_Marker(QWidget *parent)
 
 	ui.toolButton_runGrabCut->setShortcut(Qt::Key_R);
 
+	load_setting();
+
 #if 0
 	//TODO
 	action_undoDraw = new QAction(this);
@@ -113,9 +115,22 @@ Qt_Image_Marker::~Qt_Image_Marker()
 	delete action_keysubStrokeWidth;
 	delete action_cleanAllMark;
 	delete action_changeStrockWidth;
+	delete setting;
 //	delete action_undoDraw;
 }
 
+
+void Qt_Image_Marker::save_setting()
+{
+	setting->setValue("LASTFOLDER", last_open_folder);
+}
+
+void Qt_Image_Marker::load_setting()
+{
+	setting = new QSettings("config.ini", QSettings::IniFormat);
+	setting->setIniCodec("UTF-8");
+	last_open_folder = setting->value("LASTFOLDER", "\HOME").toString();
+}
 
 void Qt_Image_Marker::show_coordinate(QPoint p)
 {
@@ -239,9 +254,11 @@ void Qt_Image_Marker::closeImages()
 void Qt_Image_Marker::openFolder()
 {
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-		"/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+		last_open_folder, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 	fileModel->setFilter(QDir::Files | QDir::NoDotAndDotDot);
 	ui.listView_file->setRootIndex(fileModel->setRootPath(dir));
+	if ( !dir.isNull())
+		last_open_folder = dir;
 }
 
 void Qt_Image_Marker::selectFilefromList(const QModelIndex & current)
@@ -262,6 +279,7 @@ bool Qt_Image_Marker::openImage(const QString& filepath)
 	int l = testImg.width() > testImg.height() ? testImg.width() : testImg.height();
 	int image_scale = pow(2,((int)ceilf(log2f((float)l/1000)))); // assume 1000 is maximum resolution grab cut can handle
 	image_scale = (image_scale > 1) ? image_scale : 1;
+	//image_scale = 1;
 	QSize newImgSize = testImg.size() / image_scale;
 	this->oriImageSize = testImg.size();
 	if (oriImageSize != newImgSize)
@@ -495,6 +513,7 @@ void Qt_Image_Marker::showEvent(QShowEvent* event)
 void Qt_Image_Marker::closeEvent(QCloseEvent *event)
 {
 	closeImages();
+	save_setting();
 	event->accept(); //close window
 }
 

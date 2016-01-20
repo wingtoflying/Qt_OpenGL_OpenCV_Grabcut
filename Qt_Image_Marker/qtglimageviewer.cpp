@@ -7,6 +7,7 @@ ImageObject::ImageObject()
 {
 	translucency = 1.0f;
 	isHide = false;
+	texture = NULL;
 }
 ImageObject::~ImageObject()
 {
@@ -38,6 +39,8 @@ void ImageObject::create_vertex(QImage img, float z)
 		vertData.append(coor[i][2]); //s
 		vertData.append(coor[i][3]); //t
 	}
+	if (this->texture != NULL)
+		delete texture;
 	this->texture = new QOpenGLTexture(img, QOpenGLTexture::DontGenerateMipMaps);
 	this->texture->setMagnificationFilter(QOpenGLTexture::Nearest);
 	this->texture->setMinificationFilter(QOpenGLTexture::Nearest);
@@ -103,9 +106,13 @@ void QtGlImageviewer::addImageObject(QImage src, float z)
 
 void QtGlImageviewer::cleanImageObjects()
 {
-	imgObjs.clear();
 	if (painter != nullptr)
+	{
 		delete painter;
+	}
+	for (auto imgObj : imgObjs)
+		delete imgObj;
+	imgObjs.clear();
 	this->makeCurrent();
 	refreshVBO();
 	update();

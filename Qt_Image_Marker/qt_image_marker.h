@@ -6,6 +6,7 @@
 #include <QFileSystemModel>
 #include "ui_qt_image_marker.h"
 #include "cqtopencvviewergl.h"
+#include <QSettings>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -51,6 +52,10 @@ private:
 	QString suffixOfSaveResult;// for fg save image type
 	cv::Mat grabResult;
 	QSize oriImageSize; // save original image size
+	QString last_open_folder;
+	QSettings* setting;
+	void save_setting();
+	void load_setting();
 public slots:
 	void show_coordinate(QPoint p);
 	void link_action_switchShowMark();
